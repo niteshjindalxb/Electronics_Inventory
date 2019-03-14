@@ -1,0 +1,48 @@
+h1
+{
+    color: black;
+        font-family:cursive;
+        font-size:100px; 
+}
+.level0
+{
+    width=1140px;
+    margin-left: auto;
+    margin-left: auto;
+}
+.level1
+{
+    margin-left: 400px;
+    width: 700px;
+    font-size:50px;
+    background-color: yellow;
+    text-align: center;
+}
+.buttons
+{
+    width: 1500px;
+    display: inline-block;
+    text-align: center;
+    margin: 5% 20px;
+    padding: 20px 0px;
+    font-family:inherit;
+    font-weight:bold;
+    position: relative;
+    text-decoration:none;
+}
+a:nth-child(1){
+    background: green;
+    font-size: 50px;
+     letter-spacing:20px;
+}
+a:nth-child(2){
+    background: green;
+    font-size: 50px;
+     letter-spacing:20px;
+}
+a:nth-child(3){
+    background: green;
+    font-size: 50px;
+     letter-spacing:20px;
+}
+
