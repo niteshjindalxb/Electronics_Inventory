@@ -21,3 +21,7 @@ data_dir_path = os.path.join(dir_path, 'data')
 # Get path of files
 # File in which current rollno exists
 rollno_file = os.path.join(data_dir_path, 'rollno.txt')
+
+student_details_file = os.path.join(data_dir_path, 'student_details.csv')
+inventory_file = os.path.join(data_dir_path, 'inventory_list.csv')
+issue_file = os.path.join(data_dir_path, 'issue_list.csv')

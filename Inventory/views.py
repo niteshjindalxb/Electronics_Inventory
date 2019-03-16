@@ -1,10 +1,15 @@
-from flask import Flask, render_template, redirect, url_for, session
+# TODO
+# If student details not exists while issuing - ask user to enter details
+# Updating file can be improvised
+
+from flask import Flask, render_template, redirect, url_for, session, request
 # from model import Admin, StudentDetails, Issue, Inventory
 from . import model
 from . import settings
 
 import os
 import csv
+import datetime
 
 def createApp():
     # create app
@@ -36,7 +41,7 @@ def login():
         pass   
     else:
         # Remove the file already read
-        os.remove(settings.rollno_file)
+        # os.remove(settings.rollno_file)
         
         session['username'] = settings.rollno
         return redirect(url_for('dashboard'))
@@ -69,40 +74,113 @@ def issue():
     if not validate_user():
         return redirect(url_for('home'))
 
-    # list_of_component
-    # get all the id of items issued by rollno
-    issued_id = []  # [id, quantity_issued]
-    for log in settings.issue_log:
-        if log.get_rollno() == settings.rollno:
-            issued_id.append([log.get_id(), log.get_quantity()])
+    if request.method == 'POST':
+        requested_items = request.form.to_dict()
+        # if not validateStudent(settings.rollno):
+            # addStudentDetails(requested_items)
+            # return redirect(url_for('addStudentDetails'), requested_items)
 
-    # Get the items details having ID = id
-    # Store the issued item list in issued_item
-    issued_items = []   # [Items, quantity_issued]
-    for item in settings.inventory_items:
-        for log in issued_id:
-            if item.get_id() == log[0]:
-                issued_items.append([item, log[1]])
+        date = datetime.datetime.now().strftime("%d-%m-%Y")
+        
+        # print(requested_items)
+        for item in requested_items:
+            
+            # get item id
+            item_id = item
+            # quantity required
+            req_quantity = int(requested_items[item])
 
-    return render_template("issue_page.html", items=issued_items)
+            if req_quantity <= 0:
+                continue
+
+            # if required quantity is available then issue
+            for avail_item in settings.inventory_items:
+                if avail_item.get_id() == item_id:
+                    break
+            
+            if int(avail_item.get_quantity()) - int(avail_item.get_issued_quantity()) >= req_quantity:
+                avail_item.issued_quantity = avail_item.issued_quantity + req_quantity
+                new_obj = model.Issue([item_id, settings.rollno, req_quantity, date])
+                settings.issue_log.append(new_obj)
+                dump(settings.issue_file, [item_id, settings.rollno, req_quantity, date])
+                # Increase the issued number of items
+                update_file(settings.inventory_file, item_id, req_quantity)
+
+    return redirect(url_for('account'))
+
+
+def update_file(filename, id, quantity):
+    try:
+        os.remove(filename)
+    except FileNotFoundError:
+        print("File doesn't exists")
+    else:
+        for item in settings.inventory_items:
+            dump(filename, [
+                item.get_id(),
+                item.get_name(),
+                item.get_type(),
+                item.get_description(),
+                item.get_quantity(),
+                item.get_location(),
+                item.get_issued_quantity(),                
+            ])
+
+
+def validateStudent(RollNo):
+    for stud in settings.student_details:
+        if stud.get_rollno() == RollNo:
+            return True
+    return False
+
+def dump(filename, data):
+    try:
+        with open(filename, "a+") as f:
+            for item in data:
+                f.write(str(item)+",")
+            f.write("\n")
+    except FileNotFoundError or ValueError:
+        print("Error occurs while writing to file", filename)
 
 def renew():
     if not validate_user():
         return redirect(url_for('home'))
         
-    return render_template("renew_page.html")
+    return redirect(url_for('accounts'))
 
 def return_item():
     if not validate_user():
         return redirect(url_for('home'))
         
-    return render_template("return_page.html")
+    return redirect(url_for('accounts'))
     
 def account():
     if not validate_user():
         return redirect(url_for('home'))
         
-    return render_template("account.html")
+    for stud in settings.student_details:
+        if stud.get_rollno() == settings.rollno:
+            break
+    
+    # list_of_component
+    # get all the id of items issued by rollno
+    issued_id = []  # [id, quantity_issued, issued date]
+    for log in settings.issue_log:
+        if log.get_rollno() == settings.rollno:
+            issued_id.append([log.get_id(), log.get_issued_quantity(), log.get_issued_date()])
+
+    # Get the items details having ID = id
+    # Store the issued item list in issued_item
+    issued_items = []   # [Items, quantity_issued, issued_date]
+    for item in settings.inventory_items:
+        for log in issued_id:
+            if item.get_id() == log[0]:
+                issued_items.append([item, log[1], log[2]])
+
+    return render_template("account.html", posts={
+        'student':stud,
+        'items':issued_items,
+    })
 
 def show_list():
     if not validate_user():
@@ -127,27 +205,15 @@ def load(filename, classname, collection):
 
     with open(filename, "r") as csvFile:
         data = csv.reader(csvFile)
-        flag = False
 
-        for row in data:
-            if flag == False:
-                flag = True
-                pass
-            else:
-                obj = classname(row)
-                collection.append(obj)
+        for row in list(data)[1:]:
+            obj = classname(row)
+            collection.append(obj)
 
 # Load data
 def load_data():
-    dir_path = os.path.dirname(__file__)
-    data_dir_path = os.path.join(dir_path, 'data')
-
     # Get path of files
-    student_details_file = os.path.join(data_dir_path, 'student_details.csv')
-    inventory_file = os.path.join(data_dir_path, 'inventory_list.csv')
-    issue_file = os.path.join(data_dir_path, 'issue_list.csv')
-    
     # load from each file
-    load(student_details_file, model.StudentDetails, settings.student_details)
-    load(inventory_file, model.Inventory, settings.inventory_items)
-    load(issue_file, model.Issue, settings.issue_log)
+    load(settings.student_details_file, model.StudentDetails, settings.student_details)
+    load(settings.inventory_file, model.Inventory, settings.inventory_items)
+    load(settings.issue_file, model.Issue, settings.issue_log)

@@ -6,12 +6,14 @@ class Issue():
     id = ""
     rollno = 0
     quantity = 0
+    issued_date = ''
 
     def __init__(self, data):
         if data:
             self.id = data[0]
             self.rollno = data[1]
             self.quantity = data[2]
+            self.issued_date = data[3]
 
     def get_id(self):
         return self.id
@@ -20,7 +22,10 @@ class Issue():
         return self.rollno
 
     def get_issued_quantity(self):
-        return self.rollno
+        return self.quantity
+
+    def get_issued_date(self):
+        return self.issued_date
 
 
 # Class to keep track of list of items available in club
@@ -42,10 +47,10 @@ class Inventory():
             self.name = data[1]
             self.type = data[2]
             self.description = data[3]
-            self.quantity = data[4]
+            self.quantity = int(data[4])
             self.location = data[5]
             if data[6]:
-                self.issued_quantity = data[6]
+                self.issued_quantity = int(data[6])
             else:
                 self.issued_quantity = 0
 
@@ -79,7 +84,8 @@ class StudentDetails():
             self.rollno = data[0]
             self.name = data[1]
             self.fine = data[2]
-            self.remarks = data[3]
+            if data[3]:
+                self.remarks = data[3]
 
     def get_rollno(self):
         return self.rollno

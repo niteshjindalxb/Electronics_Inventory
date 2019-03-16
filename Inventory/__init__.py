@@ -1,9 +1,11 @@
 from flask import Flask
-from .views import createApp
+from .views import createApp, load_data
 
+# create app
 app = createApp()
+# Load data
+load_data()
 
 from . import urls
+# Setup urls
 urls.set_urls()
-
-# app.run(debug=True)

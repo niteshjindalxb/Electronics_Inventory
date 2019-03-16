@@ -10,10 +10,10 @@
             width:800px;
             margin:auto;
             text-align: center;
-            table-layout: fixed;
+            table-layout: auto;
         }
         table,tr,th,td{
-            padding: 20px;
+            padding: 10px;
             color: white;
             border:1px solid #080808;
             border-collapse: collapse;
@@ -22,31 +22,44 @@
             background: linear-gradient(top,#3c3c3c 0%,#222222 100%);
             background:-webkit-linear-gradient(top,#3c3c3c 0%,#222222 100%);
         }
-        
+        .btn{
+            background-color: green;
+            color: black;;
+            padding: 8px 20px;
+            font-size:16px;
+        }
+
     </style>
       </head>
     <body>
         <table>
         <tr>
-            <th>S.No.</th>
+            <th>Component ID</th>
             <th>Name of Component</th>
             <th>Component Type</th>
             <th>Location</th>
-            <th>Quantity</th>
+            <th>Available Quantity</th>
             <th>Description</th>
-            </tr>
+            <!-- <th>Quantity</th> -->
+            <th>Want to Issue?</th>
+        </tr>
             
             {% for item in items %}
-    <tr>
-            <td>{{ item.get_id() }}</td>
-            <td>{{ item.get_name() }}</td>
-            <td>{{ item.get_type() }}</td>
-            <td>{{ item.get_location() }}</td>
-            <td>{{ item.get_quantity() }}</td>
-             <td class="text-center"><button type ="button"onclick="alert('{{ item.get_description() }}')"class="Clk">Click</button></td>
-                </td></tr>
-
+        <tr>
+            <form action="{{ url_for('issue') }}" method="POST">
+                <td>{{ item.get_id() }}</td>
+                <td>{{ item.get_name() }}</td>
+                <td>{{ item.get_type() }}</td>
+                <td>{{ item.get_location() }}</td>
+                <td>{{ item.get_quantity()-item.get_issued_quantity() }}</td>
+                <td class="text-center"><button type ="button"onclick="alert('{{ item.get_description() }}')"class="Clk">Check</button></td>
+                <td><input type="number" id="quantity" value="0" name="{{ item.get_id() }}" /></td>
+            </tr>
             {% endfor %}
+            
+            <td class="text-center"><input type = "submit" value = "Issue" class="btn" /></td>
+        </form>
+
         </table>
         </body>
     </html>

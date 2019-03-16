@@ -7,17 +7,15 @@
     <title>Login Page</title>
 </head>
     <body>
+
     <div class="level0">
-    <h1>Hi {{student.get_name()}},</h1>
+    
+    <center> <h3>Hi {{student.get_name()}},</h3></center>
         <div class="level1">What do you want to do?</div>
-        <div class="buttons">
-        <a href="{{ url_for('issue') }}">Issue</a>
-            <a href="{{ url_for('renew') }}">Renew</a>
-            <a href="{{ url_for('return_item') }}">Return</a><br>
-            </div>
-        <a href="{{ url_for('account') }}">Accounts</a><br><br>
-            <a href="{{ url_for('show_list') }}">List of Components</a><br><br>
-            <a href="{{ url_for('admin') }}">Admin</a>
+
+            <a href="{{ url_for('account') }}">Accounts</a><br>
+            <a href="{{ url_for('show_list') }}">List of Components</a><br>
+            <a href="{{ url_for('admin') }}">Admin</a><br>
             <a href="{{ url_for('logout') }}">Logout</a>
             </div>
         
