@@ -68,36 +68,37 @@
             </tr>
                 {% for item in posts['items'] %}
                     <tr>
-                        <form id="{{ item[0].get_id() }}" action="" method="POST">
-                            <td>{{ item[0].get_id() }}</td>
-                            <td>{{ item[0].get_name() }}</td>
-                            <td>{{ item[1] }}</td>
-                            <td>{{ item[2] }}</td>
-                            <td>05/01/2019</td>
-                            
+                        <td>{{ item[0].get_id() }}</td>
+                        <td>{{ item[0].get_name() }}</td>
+                        <td>{{ item[1] }}</td>
+                        <td>{{ item[2] }}</td>
+                        <td>05/01/2019</td>
+                        
+                        <form id="form{{ item[0].get_id() }}" action="" method="POST">
                             <td class="text-center"><button type ="button"class="btn0" id="btn0{{ item[0].get_id() }}" name="btn0" onclick="renew_func()" value="renew">Renew</button></td>
                             <td class="text-center"><button type ="button"class="btn1" id="btn1{{ item[0].get_id() }}" name="btn1" onclick="return_func()" value="return">Return</button></td>
-
+                        </form>
                             <script>
                                 function renew_func() {
-                                    var myForm = document.getElementById("{{ item[0].get_id() }}");
+                                    var myForm = document.getElementById("form{{ item[0].get_id() }}");
                                     var myAction = "{{ url_for('renew') }}";
                                     
                                     myForm.action = myAction;
                                     myForm.method = "POST";
+                                    myForm.innerHTML='<input type="text" name="renew" value="{{ item[0].get_id() }}" style="display:none">';
                                     myForm.submit();
                                 }
                                 function return_func() {
-                                    var myForm = document.getElementById("{{ item[0].get_id() }}");
+                                    var myForm = document.getElementById("form{{ item[0].get_id() }}");
                                     var myAction = "{{ url_for('return_item') }}";
                                     
                                     myForm.action = myAction;
                                     myForm.method = "POST";
+                                    myForm.innerHTML='<input type="text" name="return" value="{{ item[0].get_id() }}" style="display:none">';
                                     myForm.submit();
                                 }
                             </script>
                     </tr>
-                        </form>
                 {% endfor %}
         {% else %}
             <div class="level2">No item is issued by you!</div>

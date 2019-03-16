@@ -1,6 +1,10 @@
 # TODO
 # If student details not exists while issuing - ask user to enter details
 # Updating file can be improvised
+# Fine Calculation
+# Limiting renew chances
+
+# Using sql database if possible
 
 from flask import Flask, render_template, redirect, url_for, session, request
 # from model import Admin, StudentDetails, Issue, Inventory
@@ -99,32 +103,31 @@ def issue():
                     break
             
             if int(avail_item.get_quantity()) - int(avail_item.get_issued_quantity()) >= req_quantity:
+                # Increased the issued quantity record
                 avail_item.issued_quantity = avail_item.issued_quantity + req_quantity
                 new_obj = model.Issue([item_id, settings.rollno, req_quantity, date])
+                # Issue item to the user
                 settings.issue_log.append(new_obj)
+                # Update the issue file
                 dump(settings.issue_file, [item_id, settings.rollno, req_quantity, date])
-                # Increase the issued number of items
-                update_file(settings.inventory_file, item_id, req_quantity)
+                # Update Inventory file
+                # Set header for inventory file
+                header = ["ID","Name","Type","Description","Amount(in num)","location","Issued Quantity",""]
+                update_file(settings.inventory_file, item_id, req_quantity, settings.inventory_items, header)
 
     return redirect(url_for('account'))
 
 
-def update_file(filename, id, quantity):
+def update_file(filename, id, quantity, table, header):
     try:
         os.remove(filename)
     except FileNotFoundError:
         print("File doesn't exists")
     else:
-        for item in settings.inventory_items:
-            dump(filename, [
-                item.get_id(),
-                item.get_name(),
-                item.get_type(),
-                item.get_description(),
-                item.get_quantity(),
-                item.get_location(),
-                item.get_issued_quantity(),                
-            ])
+        dump(filename, header)
+        for row in table:
+            data = list(row.__dict__.values())
+            dump(filename, data)
 
 
 def validateStudent(RollNo):
@@ -137,7 +140,7 @@ def dump(filename, data):
     try:
         with open(filename, "a+") as f:
             for item in data:
-                f.write(str(item)+",")
+                f.write('"' + str(item) + '"' +",")
             f.write("\n")
     except FileNotFoundError or ValueError:
         print("Error occurs while writing to file", filename)
@@ -146,13 +149,48 @@ def renew():
     if not validate_user():
         return redirect(url_for('home'))
         
-    return redirect(url_for('accounts'))
+    if request.method == 'POST':
+        requested_items = request.form.to_dict()
+        print(requested_items)
+        date = datetime.datetime.now().strftime("%d-%m-%Y")
+
+        for issued_item in settings.issue_log:
+            if issued_item.get_id() == requested_items['renew']:
+                break
+        
+        issued_item.issued_date = date
+        # Update issue file
+        header = ["ID","Rollno","Quantity","Issued Date"]
+        update_file(settings.issue_file, requested_items['renew'], None, settings.issue_log, header)
+    
+    return redirect(url_for('account'))
 
 def return_item():
     if not validate_user():
         return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        requested_items = request.form.to_dict()
+        print(requested_items)
+        # Remove item from issue list
+        for item in settings.issue_log:
+            if item.get_id() == requested_items['return']:
+                return_amount = item.get_issued_quantity()
+                settings.issue_log.remove(item)
+                break
+        # Decrease issued quantity of item by return_amount in inventory list
+        for row in settings.inventory_items:
+            if row.get_id() == requested_items['return']:
+                row.issued_quantity = int(row.issued_quantity) - int(return_amount)
+                break
+        # Update issue file
+        header = ["ID","Rollno","Quantity","Issued Date"]
+        update_file(settings.issue_file, requested_items['return'], None, settings.issue_log, header)
+        # Update inventory file
+        header = ["ID","Name","Type","Description","Amount(in num)","location","Issued Quantity",""]
+        update_file(settings.inventory_file, requested_items['return'], None, settings.inventory_items, header)
         
-    return redirect(url_for('accounts'))
+    return redirect(url_for('account'))
     
 def account():
     if not validate_user():
