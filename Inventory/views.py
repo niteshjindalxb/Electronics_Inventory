@@ -152,7 +152,7 @@ def return_item():
 def account():
     if not validate_user():
         return redirect(url_for('home'))
-        
+    print("In here")    
     for stud in settings.student_details:
         if int(stud.get_rollno()) == int(settings.rollno):
             break
@@ -215,7 +215,7 @@ def admin():
 
 def validate_user():
     # Check session and rollno
-    if 'username' in session and settings.rollno is not None:
+    if 'username' in session and settings.rollno is not None and settings.rollno != "":
         return True
     else:
         return False

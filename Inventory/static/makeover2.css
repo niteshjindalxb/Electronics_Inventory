@@ -1,48 +1,63 @@
-h1
-{
-    color: black;
-        font-family:cursive;
-        font-size:100px; 
-}
-.level0
-{
-    width=1140px;
-    margin-left: auto;
-    margin-left: auto;
-}
-.level1
-{
-    margin-left: 400px;
-    width: 700px;
-    font-size:50px;
-    background-color: yellow;
-    text-align: center;
-}
-.buttons
-{
-    width: 1500px;
-    display: inline-block;
-    text-align: center;
-    margin: 5% 20px;
-    padding: 20px 0px;
-    font-family:inherit;
-    font-weight:bold;
-    position: relative;
-    text-decoration:none;
-}
-a:nth-child(1){
-    background: green;
-    font-size: 50px;
-     letter-spacing:20px;
-}
-a:nth-child(2){
-    background: green;
-    font-size: 50px;
-     letter-spacing:20px;
-}
-a:nth-child(3){
-    background: green;
-    font-size: 50px;
-     letter-spacing:20px;
-}
 
+        body{
+            background: skyblue;
+            }
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        li {
+            float: left;
+        }
+
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        li a:hover {
+            background-color: #111;
+        }
+        table{
+            width:1000px;
+            margin:auto;
+            text-align: center;
+            table-layout: auto;
+        }
+        table,tr,th,td{
+            padding: 20px;
+            color: white;
+            border:1px solid #080808;
+            border-collapse: collapse;
+            font-size: 18px;
+            font-family: Arial;
+            background: linear-gradient(top,#3c3c3c 0%,#222222 100%);
+            background:-webkit-linear-gradient(top,#3c3c3c 0%,#222222 100%);
+        }
+        .btn0{
+            background-color: yellow;
+            color: black;;
+            padding: 8px 20px;
+            font-size:16px;
+        }
+         .btn1{
+            background-color: red;
+            color: black;;
+            padding: 8px 20px;
+            font-size:16px;
+        }
+        .card {
+        background-color: #3579dc;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        margin: auto;
+        text-align: center;
+        font-family: arial;
+        }
+    
