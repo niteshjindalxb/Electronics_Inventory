@@ -58,6 +58,7 @@ def logout():
     # remove the username from the session if it is there
     session.pop('username', None)
     settings.rollno = None
+    settings.lock = False
     return redirect(url_for('home'))
 
 def dashboard():
@@ -347,10 +348,12 @@ def accessCupboard():
                         # print(stud.get_rollno())
                         # print(settings.rollno)
                         if str(stud.get_rollno()) == str(settings.rollno) and str(stud.get_location()) == str(row.get_location())[:2]:
+                            # Access Granted
                             access_list.append(True)
                             access_flag = True
+                            # Open the lock
+                            settings.lock = True
                             flag = True
-                            print("Here made true")
                             break
                     
                     if not access_flag:
@@ -406,3 +409,10 @@ def issue():
                 update_file(settings.inventory_file, item_id, req_quantity, settings.inventory_items, header)
 
     return redirect(url_for('account'))
+
+# Display lock details to give response to lock
+def lock_details():
+    if settings.lock:
+        return "1"
+    else:
+        return "0"

@@ -3,7 +3,10 @@ import os
 global admin_accounts, inventory_items, issue_log, student_details
 global rollno, rollno_file
 global fine_rate
+global lock
 
+# Lock : {False : Close, True : Open}
+lock = False
 # Rs 1 per extra day
 fine_rate=1
 # Collection of all the admin users

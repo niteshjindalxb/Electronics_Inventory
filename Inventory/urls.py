@@ -15,6 +15,7 @@ def set_urls():
     app.add_url_rule('/admin/', 'admin', view_func=admin)
     app.add_url_rule('/reset_user/', 'reset_user', view_func=reset_user, methods = ['GET', 'POST'])
     app.add_url_rule('/accessCupboard/', 'accessCupboard', view_func=accessCupboard, methods = ['GET', 'POST'])
+    app.add_url_rule('/lock_details/', 'lock_details', view_func=lock_details, methods = ['GET', 'POST'])
 
 
 # Main function

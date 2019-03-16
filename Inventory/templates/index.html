@@ -84,13 +84,13 @@
         
         {% if posts['access'] == True %}
             <center> <h2>Hi {{posts['student'].get_name()}}!</h2></center>
-            <div class="level1">What do you want to do?</div>
+            <!-- <div class="level1">What do you want to do?</div>
             
             <a href="{{ url_for('account') }}">Accounts</a><br>
                 <a href="{{ url_for('show_list') }}">List of Components</a><br>
                 <a href="{{ url_for('admin') }}">Admin</a><br>
                 <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
+            </div> -->
         {% else %}
             <h2>You're not allowed to access this page.</h2>
             
