@@ -1,31 +1,32 @@
+from datetime import datetime
+from datetime import timedelta
+
 # Class to keep track of who has issued what items
 ##########################################
 # Component_ID | Rollno | IssuedQuantity #
 ##########################################
 class Issue():
-    id = ""
-    rollno = 0
-    quantity = 0
-    issued_date = ''
-
     def __init__(self, data):
         if data:
             self.id = data[0]
             self.rollno = data[1]
             self.quantity = data[2]
             self.issued_date = data[3]
+            try:
+                self.expected_return_date = data[4]
+            except:
+                self.expected_return_date = self.issued_date + timedelta(days=45)
 
     def get_id(self):
         return self.id
-
     def get_rollno(self):
         return self.rollno
-
     def get_issued_quantity(self):
         return self.quantity
-
     def get_issued_date(self):
         return self.issued_date
+    def get_return_date(self):
+        return self.expected_return_date
 
 
 # Class to keep track of list of items available in club
@@ -33,14 +34,6 @@ class Issue():
 # Component_ID | Name | Type | Total Quantity | Location | IssuedQuantity | Description #
 #########################################################################################
 class Inventory():
-    id=""
-    name=""
-    type=""
-    quantity=0
-    location = ""
-    issued_quantity=0
-    description=""
-
     def __init__(self,data):
         if data:
             self.id = data[0]
@@ -49,8 +42,9 @@ class Inventory():
             self.description = data[3]
             self.quantity = int(data[4])
             self.location = data[5]
-            if data[6]:
-                self.issued_quantity = int(data[6])
+            self.barcode = data[6]
+            if data[7]:
+                self.issued_quantity = int(data[7])
             else:
                 self.issued_quantity = 0
 
@@ -68,17 +62,16 @@ class Inventory():
         return self.location
     def get_issued_quantity(self):
         return self.issued_quantity
-    
+    def get_barcode(self):
+        return self.barcode
+    def __str__(self):
+        return self.name
     
 # Class to keep track of student details
 ######################################################
 # Rollno | Name | Fine | Remarks (Ex. Robotics Club) #
 ######################################################
 class StudentDetails():
-    rollno=0
-    name=""
-    fine=0
-    remarks=""
     def __init__(self, data):
         if data:
             self.rollno = data[0]
@@ -98,15 +91,29 @@ class StudentDetails():
     def __str__(self):
         return self.name
 
+# Class to keep track of student with their accessibility
+#####################
+# Rollno | location #
+#####################
+class StudentAccess():
+    def __init__(self, data):
+        if data:
+            self.rollno = data[0]
+            self.location = data[1]
+
+    def get_rollno(self):
+        return self.rollno
+    def get_location(self):
+        return self.location
+    def __str__(self):
+        return str(self.rollno) + ' ' + str(self.location)
+
 
 # Class to keep track of student details
 #######################
 # Username | Password #
 #######################
 class Admin():
-    userid=0
-    password=""
-
     def __init__(self, data):
         if data:
             self.userid = data[0]

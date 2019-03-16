@@ -9,8 +9,10 @@ admin_accounts = []
 inventory_items = []
 # Collection of issue logs
 issue_log = []
-# Collection of student details
+# Collection of valid student details
 student_details = []
+# Collection of student with their access details
+student_access_list = []
 
 # Current active rollno
 rollno = None
@@ -23,5 +25,6 @@ data_dir_path = os.path.join(dir_path, 'data')
 rollno_file = os.path.join(data_dir_path, 'rollno.txt')
 
 student_details_file = os.path.join(data_dir_path, 'student_details.csv')
+student_access_file = os.path.join(data_dir_path, 'student_access_list.csv')
 inventory_file = os.path.join(data_dir_path, 'inventory_list.csv')
 issue_file = os.path.join(data_dir_path, 'issue_list.csv')

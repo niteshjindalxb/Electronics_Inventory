@@ -4,20 +4,46 @@
     <link rel="stylesheet"type="text/css"
           href="{{ url_for('static', filename='makeover2.css') }}">
 
+    {% if posts['access'] == True %}
     <title>Login Page</title>
+    {% else %}
+    <title>Access Denied</title>
+    {% endif %}
 </head>
-    <body>
-
-    <div class="level0">
+<body>
     
-    <center> <h3>Hi {{student.get_name()}},</h3></center>
-        <div class="level1">What do you want to do?</div>
-
-            <a href="{{ url_for('account') }}">Accounts</a><br>
-            <a href="{{ url_for('show_list') }}">List of Components</a><br>
-            <a href="{{ url_for('admin') }}">Admin</a><br>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
+    <div class="level0">
         
+        {% if posts['access'] == True %}
+            <center> <h2>Hi {{posts['student'].get_name()}}!</h2></center>
+            <div class="level1">What do you want to do?</div>
+            
+            <a href="{{ url_for('account') }}">Accounts</a><br>
+                <a href="{{ url_for('show_list') }}">List of Components</a><br>
+                <a href="{{ url_for('admin') }}">Admin</a><br>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        {% else %}
+            <h2>You're not allowed to access this page.</h2>
+            
+            <div class="w3-container">
+                <form id="form" action="{{ url_for('reset_user') }}" method="POST">
+                <input type="button" class="w3-button w3-black" value="Go Back" onclick="reset_user()">
+                </form>
+            </div>
+            <script>
+                function reset_user()   {
+                    document.getElementById("form").submit()
+                }
+            </script>
+
+            <!-- <div class="w3-container">
+                    <h2>Buttons (w3-button)</h2>
+                    <input type="button" class="w3-button w3-black" value="Input Button">
+                    <button class="w3-button w3-black">Button Button</button>
+                    <a href="#" class="w3-button w3-black">Link Button</a>
+            </div> -->
+        {% endif %}
+            
         </div>
 </html>

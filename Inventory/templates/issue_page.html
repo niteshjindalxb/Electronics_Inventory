@@ -10,7 +10,7 @@
             width:800px;
             margin:auto;
             text-align: center;
-            table-layout: fixed;
+            table-layout: auto;
         }
         table,tr,th,td{
             padding: 20px;
@@ -31,96 +31,63 @@
     </style>
       </head>
     <body>
-        <table>
-        <tr>
-            <th>Component ID</th>
-            <th>List of Components</th>
-            <th>Component Id</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Available</th>
-             <th>Option</th>
+    {% if (posts['access_list']) |count != 0 %}
+            <table>
+            <tr>
+                <th>Component ID</th>
+                <!-- <th>Component name</th> -->
+                <!-- <th>Description</th> -->
+                <th>Requested Quantity</th>
+                <!-- <th>Available</th> -->
+                <th>Remarks</th>
+                </tr>
+        <form id = "issue_list" action="{{ url_for('issue') }}" method="POST">
+            {% for item in zip(posts['access_list'], posts['valid_request'], posts['requested_items'].items()) %}
+            <tr>
+                <td>{{ item[2][0] }}</td>
+                <!-- <td>Component name</td> -->
+                <!-- <td>Description</td> -->
+                <td>{{ item[2][1] }}</td>
+
+                <input type="text" id="{{ item[2][0] }}" value="{{ item[2][1] }}" style="display:none">
+                <!-- If valid request -->
+                {% if item[1] %}
+                    <!-- If access granted -->
+                    {% if item[0] %}
+                        <td>"Lock is opened"</td>
+                        <td><input type="number" id="barcode" placeholder="Enter barcode here" required="required"></td>
+                    {% else %}
+                        <td>"Access Denied"</td>
+                    {% endif %}
+                {% else %}
+                    <td>"Invalid Quantity Requested"</td>
+                {% endif %}
+                
             </tr>
-            
-    <tr>
-            <td>1</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-    
-    <tr>
-             <td>2</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
+            {% endfor %}
+        </form>
+    {% endif %}
+            {% if posts['flag'] %}
+                <div class="w3-container">
+                    <input type="button" class="w3-button w3-black" value="Issue" onclick="issueFunction()">
+                </div>
+            {% else %}
+            <form id="home" method="POST" action="{{ url_for('home') }}">
+                <div class="w3-container">
+                    <input type="button" class="w3-button w3-black" value="Go Home" onclick="goHomeFunction()">
+                </div>
+            </form>
+            {% endif %}
 
-<tr>
-              <td>3</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
+            <script>
+                function goHomeFunction()   {
+                    document.getElementById("home").submit();
+                }
+                function issueFunction()    {
+                    document.getElementById("issue_list").submit();
+                }
+            </script>
 
-<tr>
-           <td>4</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-
-<tr>
-            <td>5</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-
-<tr>
-            <td>6</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-
-<tr>
-             <td>7</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-
-<tr>
-              <td>8</td>
-            <td>Arduino Uno</td>
-            <td>ABCD123</td>
-            <td class="text-center"><button type ="button"onclick="alert('a mini computer')"class="Clk">Click</button></td>
-            <td>1</td>
-            <td>1</td>
-            <td class="text-center"><button type ="button"class="btn">Issue</button>
-                </td></tr>
-        </table>
+            </table>
         </body>
     </html>
