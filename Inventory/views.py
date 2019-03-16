@@ -33,15 +33,14 @@ def home():
     if validate_user():
         return redirect(url_for('dashboard'))
 
-    if scrap_rollno() is not "":
+    if scrap_rollno() != "":
         settings.rollno = scrap_rollno()
         return redirect(url_for('login'))
 
     return render_template("home.html")
 
 def reset_user():
-    settings.rollno = None
-    return redirect(url_for('home'))
+    return redirect(url_for('logout'))
 
 def login():
     if validate_user():
@@ -51,12 +50,13 @@ def login():
     session['username'] = settings.rollno
     return redirect(url_for('dashboard'))
 
-    return redirect(url_for('home'))
-
 
 def logout():
     # remove the username from the session if it is there
-    session.pop('username', None)
+    try:
+        session.pop('username', None)
+    except:
+        pass
     settings.rollno = None
     settings.lock = False
     return redirect(url_for('home'))

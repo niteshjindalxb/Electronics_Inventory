@@ -10,7 +10,7 @@ def scrap_rollno():
         data = str(data)
         return data
     except requests.exceptions.ConnectionError:
-        return 160101084
+        return "160101084"
 
 
 if __name__ == "__main__":
