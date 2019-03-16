@@ -157,25 +157,49 @@ def account():
         if int(stud.get_rollno()) == int(settings.rollno):
             break
     
+    issued_items = []   # List of objects of Issue class
     # list_of_component
     # get all the id of items issued by rollno
     issued_id = []  # [id, quantity_issued, issued date, return date]
     for log in settings.issue_log:
         if str(log.get_rollno()) == str(settings.rollno):
             issued_id.append([log.get_id(), log.get_issued_quantity(), log.get_issued_date(), log.get_return_date()])
+            issued_items.append(log)
 
     # Get the items details having ID = id
     # Store the issued item list in issued_item
-    issued_items = []   # [Items, quantity_issued, issued_date]
+    issued_item_details = []   # [Items, quantity_issued, issued_date]
     for item in settings.inventory_items:
         for log in issued_id:
             if str(item.get_id()) == str(log[0]):
-                issued_items.append([item, log[1], log[2], log[3]])
+                issued_item_details.append([item, log[1], log[2], log[3]])
 
     return render_template("account.html", posts={
         'student':stud,
-        'items':issued_items,
+        'items':issued_item_details,
     })
+
+# Calculate fine of a student with given rollno
+# Input : Rollno, List of items issued by student
+# Output: Total Fine
+def calc_fine(student_rollno, issued_items):
+    # get previous fine from student_details list
+    # get all the issued item list
+    # Calculate fine for all the items
+    previous_fine = 0
+    for student in settings.student_details:
+        if str(student.get_rollno()) == str(settings.rollno):
+            previous_fine = student.get_fine()
+    
+    fine = previous_fine
+
+    for item in issued_items:
+        issue_date = item.get_issued_date()
+        current_date = datetime.now()
+        if (current_date - issue_date).days > 45:
+            fine = fine + (abs((current_date - issue_date).days))
+
+    return fine
 
 def show_list():
     if not validate_user():
