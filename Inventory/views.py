@@ -114,6 +114,16 @@ def renew():
             if issued_item.get_id() == requested_items['renew']:
                 break
         
+        # Calculate fine for renewed item
+        fine = calc_fine_item(issued_item)
+        if fine > 0:
+            # Update student details with fine
+            for student in settings.student_details:
+                if str(student.get_rollno()) == str(settings.rollno):
+                    student.fine = float(student.get_fine()) + fine
+                    header = ["rollno", "name", "fine", "remarks"]
+                    update_file(settings.student_details_file, settings.rollno, None, settings.student_details, header)
+
         issued_item.issued_date = date
         issued_item.expected_return_date = date + timedelta(days=45)
         # Update issue file
@@ -133,8 +143,19 @@ def return_item():
         for item in settings.issue_log:
             if item.get_id() == requested_items['return']:
                 return_amount = item.get_issued_quantity()
+                issued_item = item
                 settings.issue_log.remove(item)
                 break
+        # Calculate fine for the item i.e. returned
+        fine = calc_fine_item(issued_item)
+        if fine > 0:
+            # Update student details with fine
+            for student in settings.student_details:
+                if str(student.get_rollno()) == str(settings.rollno):
+                    student.fine = float(student.get_fine()) + fine
+                    header = ["rollno", "name", "fine", "remarks"]
+                    update_file(settings.student_details_file, settings.rollno, None, settings.student_details, header)
+
         # Decrease issued quantity of item by return_amount in inventory list
         for row in settings.inventory_items:
             if row.get_id() == requested_items['return']:
@@ -152,7 +173,7 @@ def return_item():
 def account():
     if not validate_user():
         return redirect(url_for('home'))
-    print("In here")    
+    
     for stud in settings.student_details:
         if int(stud.get_rollno()) == int(settings.rollno):
             break
@@ -174,7 +195,10 @@ def account():
             if str(item.get_id()) == str(log[0]):
                 issued_item_details.append([item, log[1], log[2], log[3]])
 
+    fine = calc_fine(settings.rollno, issued_items)
+    print('Fine = ', fine)
     return render_template("account.html", posts={
+        'fine':fine,
         'student':stud,
         'items':issued_item_details,
     })
@@ -186,20 +210,32 @@ def calc_fine(student_rollno, issued_items):
     # get previous fine from student_details list
     # get all the issued item list
     # Calculate fine for all the items
-    previous_fine = 0
+    previous_fine = 0.0
     for student in settings.student_details:
         if str(student.get_rollno()) == str(settings.rollno):
-            previous_fine = student.get_fine()
+            previous_fine = float(student.get_fine())
     
     fine = previous_fine
 
     for item in issued_items:
-        issue_date = item.get_issued_date()
-        current_date = datetime.now()
-        if (current_date - issue_date).days > 45:
-            fine = fine + (abs((current_date - issue_date).days))
+        fine = fine + calc_fine_item(item)
 
     return fine
+
+def calc_fine_item(item):
+    issue_date = item.get_issued_date()
+    try:
+        issue_date_obj = datetime.strptime(issue_date, '%Y-%m-%d %H:%M:%S.%f')
+    except TypeError:
+        issue_date_obj = issue_date
+
+    fine = 0.0
+    current_date = datetime.now()
+    print('&&&&&&&&', type(issue_date_obj))
+    print(type(current_date))
+    if (current_date - issue_date_obj).days > 45:
+        fine = fine + float(settings.fine_rate*(abs((current_date - issue_date_obj).days) - 45))
+    return float(fine)
 
 def show_list():
     if not validate_user():
