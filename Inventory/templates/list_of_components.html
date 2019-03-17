@@ -64,11 +64,55 @@
             text-align: center;
             font-family: arial;
             }
+            div#loading {
+                width: 35px;
+                height: 35px;
+                display: none;
+                background: url(/media/nitesh/MyFiles/Electronics_Club/Inventory/Inventory/static/image/loading.gif) no-repeat;
+                cursor: wait;
+            }
+            div#loading_text {
+                width: 100px;
+                height: 100px;
+                background-color: transparent;
+                
+                position: absolute;
+                top:0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                
+                margin: auto;
+            }
+            .center {
+                padding: 70px 0;
+                /* border: 3px solid green; */
+                text-align: center;
+            }
+            img {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 75%;
+            }
         </style>
 
-    </style>
+        <script type="text/javascript">
+            function loading(){
+                document.getElementById('loading').style.display = 'block'; // show
+                document.getElementById('content').style.display = 'none'; // hide
+                document.getElementById('myForm').submit(); // submit form
+            }
+        </script>
       </head>
     <body>
+        <div id="loading">
+            <div id="loading_text">
+                <img src="{{ url_for('static', filename='image/loading.gif') }}" alt="Loading...">
+                <h2 class="center">Unlocking... Please Wait!</h2>
+            </div>
+        </div>
+        <div id="content">
         <ul>
             <li><a class="active" href="{{ url_for('home') }}">Home</a></li>
             <li><a href="{{ url_for('account') }}">Account</a></li>
@@ -91,7 +135,7 @@
             
             {% for item in items %}
         <tr>
-            <form action="{{ url_for('accessCupboard') }}" method="POST">
+            <form id="myForm" action="{{ url_for('accessCupboard') }}" method="POST">
                 <td>{{ item.get_id() }}</td>
                 <td>{{ item.get_name() }}</td>
                 <td>{{ item.get_type() }}</td>
@@ -102,9 +146,10 @@
             </tr>
             {% endfor %}
             
-            <td class="text-center"><input type = "submit" value = "Next" class="btn" /></td>
+            <td class="text-center"><input type = "button" value = "Next" class="btn" onclick="loading()"/></td>
         </form>
 
         </table>
+        </div>
         </body>
     </html>
