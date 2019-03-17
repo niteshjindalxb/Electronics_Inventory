@@ -19,6 +19,7 @@ from .scrapping import scrap_rollno
 
 import os
 import csv
+import time
 from datetime import datetime, timedelta
 
 def createApp():
@@ -33,7 +34,7 @@ def home():
     if validate_user():
         return redirect(url_for('dashboard'))
 
-    if scrap_rollno() != "":
+    if scrap_rollno() != "" and scrap_rollno() != " ":
         settings.rollno = scrap_rollno()
         return redirect(url_for('login'))
 
@@ -69,7 +70,7 @@ def dashboard():
     cur_student = model.StudentDetails(None)
 
     for stud in settings.student_details:
-        if int(stud.get_rollno()) == int(settings.rollno):
+        if str(stud.get_rollno()) == str(settings.rollno):
             cur_student = stud
             break
 
@@ -130,6 +131,11 @@ def renew():
         # Update issue file
         header = ["ID","Rollno","Quantity","Issued Date","Expected Return Date"]
         update_file(settings.issue_file, requested_items['renew'], None, settings.issue_log, header)
+
+        # Add to history
+        # ["Component ID","Component name","Task","Quantity","Date","Rollno","Student Name",]
+        history = []
+
     
     return redirect(url_for('account'))
 
@@ -252,7 +258,11 @@ def admin():
 
 def validate_user():
     # Check session and rollno
-    if 'username' in session and settings.rollno is not None and settings.rollno != "":
+    if 'username' in session and settings.rollno is not None and str(settings.rollno) != "" and str(settings.rollno) != ' ':
+        print("%^&", (settings.rollno))
+        if str(settings.rollno) == ' ':
+            print("It's a space")
+        print("2")
         return True
     else:
         return False
@@ -261,7 +271,7 @@ def accessAllowed():
     # Check if user have access to the electronics club items
     accessAllowed = False
     for stud in settings.student_details:
-        if int(stud.get_rollno()) == int(settings.rollno):
+        if str(stud.get_rollno()) == str(settings.rollno):
             accessAllowed = True
             break
     if accessAllowed:
@@ -359,6 +369,10 @@ def accessCupboard():
                     if not access_flag:
                         access_list.append(False)
 
+        if flag:
+            time.sleep(10)
+            settings.lock = False
+
         return render_template('issue_page.html', posts={
             'flag':flag,
             'access_list':access_list,
@@ -416,3 +430,6 @@ def lock_details():
         return "1"
     else:
         return "0"
+
+def add_to_history(data):
+    dump(settings.history_file, data)
